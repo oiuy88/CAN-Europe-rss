@@ -28,7 +28,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Generate RSS feed
-        run: python generate_feed.py
+        run: python scraper.py
 
       - name: Commit updated feed
         run: |
