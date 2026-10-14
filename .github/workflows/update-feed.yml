@@ -1,53 +1,39 @@
-name: Update PAN Europe RSS
+name: Update CAN Europe RSS feed
 
 on:
   schedule:
-    # Run once every hour.
-    - cron: "21 * * * *"
-
-  # Also allow manual execution.
+    - cron: "17 */2 * * *"
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   update-feed:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.12"
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Generate RSS feed
-        run: |
-          python scraper.py
+        run: python generate_feed.py
 
-      - name: Commit updated RSS feed
+      - name: Commit updated feed
         run: |
-
           git config user.name "github-actions[bot]"
-
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add can-europe-publications.xml
-
-          if git diff --cached --quiet; then
-            echo "No changes to RSS feed."
-          else
-            git commit -m "Update CAN Europe RSS feed"
-            git push
-          fi
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add feed.xml
+          git diff --cached --quiet || git commit -m "Update RSS feed"
+          git push
