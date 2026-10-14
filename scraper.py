@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-BASE_URL = "https://caneurope.org/"
+BASE_URL = "https://caneurope.org"
 LIST_URL = f"{BASE_URL}/publications/"
 OUTPUT_FILE = "can-europe-publications.xml"
 
@@ -79,10 +79,8 @@ def find_article_container(title_link):
 def extract_articles(soup):
     articles = {}
 
-    # On the current CAN Europe page, publication titles
-    # are h3 links pointing to /publications/title
+    # Find publication titles.
     for heading in soup.find_all("h3"):
-
         title_link = heading.find("a", href=True)
 
         if not title_link:
@@ -90,51 +88,41 @@ def extract_articles(soup):
 
         href = urljoin(BASE_URL, title_link["href"])
 
-        # Only accept actual publication URLs.
-       # if not re.match(
-            r"^https://www\.caneurope\.org/publications/\d{4}/\d{2}/",
+        # Only accept CAN Europe publication URLs.
+        if not re.match(
+            r"^https?://(?:www\.)?caneurope\.org/publications/.+",
             href,
-     #   ):
+        ):
             continue
 
-     #   title = title_link.get_text(" ", strip=True)
+        title = title_link.get_text(" ", strip=True)
 
-      #  if not title:
+        if not title:
             continue
 
-      #  container = find_article_container(title_link)
+        container = find_article_container(title_link)
 
-   #     if container is None:
+        if container is None:
             print(f"Could not find date for: {title}")
             continue
 
-    #    container_text = container.get_text(" ", strip=True)
+        container_text = container.get_text(" ", strip=True)
+        date_match = DATE_PATTERN.search(container_text)
 
-    #    date_match = DATE_PATTERN.search(container_text)
-
-   #     if not date_match:
+        if not date_match:
             continue
 
-    #    published = parse_date(date_match.group(0))
+        published = parse_date(date_match.group(0))
 
         # Extract a reasonably clean teaser.
         description = container_text
 
-        # Remove date.
         description = description.replace(
-            date_match.group(0),
-            "",
-            1,
+            date_match.group(0), "", 1
         )
 
-        # Remove title.
-        description = description.replace(
-            title,
-            "",
-            1,
-        )
+        description = description.replace(title, "", 1)
 
-        # Remove "Read more".
         description = re.sub(
             r"\bRead more\b",
             "",
@@ -156,7 +144,6 @@ def extract_articles(soup):
         }
 
     return list(articles.values())
-
 
 def collect_articles():
     articles = {}
@@ -273,9 +260,8 @@ def create_rss(articles):
         )
 
         # XML-safe description.
-        description = html.escape(
-            article["description"]
-        )
+        description = article["description"]
+            
 
         ET.SubElement(
             item,
