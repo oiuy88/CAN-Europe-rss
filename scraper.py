@@ -13,13 +13,39 @@ OUTPUT_FILE = Path("feed.xml")
 MAX_ITEMS = 50
 
 
+#def fetch_publications():
+    #response = requests.get(
+        #SOURCE_URL,
+        #headers={"User-Agent": "CAN-Europe-RSS/1.0"},
+        #timeout=30,
+    #)
+    #response.raise_for_status()
+
 def fetch_publications():
     response = requests.get(
         SOURCE_URL,
-        headers={"User-Agent": "CAN-Europe-RSS/1.0"},
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            ),
+            "Accept": (
+                "text/html,application/xhtml+xml,"
+                "application/xml;q=0.9,*/*;q=0.8"
+            ),
+            "Accept-Language": "en-US,en;q=0.9",
+        },
         timeout=30,
     )
-    response.raise_for_status()
+
+print("Status:", response.status_code)
+print("Final URL:", response.url)
+print("Content-Type:", response.headers.get("Content-Type"))
+print("Server:", response.headers.get("Server"))
+print("Response preview:", response.text[:1000])
+
+response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
     publications = []
