@@ -39,13 +39,13 @@ def fetch_publications():
         timeout=30,
     )
 
-print("Status:", response.status_code)
-print("Final URL:", response.url)
-print("Content-Type:", response.headers.get("Content-Type"))
-print("Server:", response.headers.get("Server"))
-print("Response preview:", response.text[:1000])
+    print("Status:", response.status_code)
+    print("Final URL:", response.url)
+    print("Content-Type:", response.headers.get("Content-Type"))
+    print("Server:", response.headers.get("Server"))
+    print("Response preview:", response.text[:1000])
 
-response.raise_for_status()
+    response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
     publications = []
