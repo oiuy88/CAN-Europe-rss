@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 SOURCE_URL = "https://caneurope.org/publications/"
-FEED_URL = "https://YOUR-USERNAME.github.io/YOUR-REPO/feed.xml"
+FEED_URL = "https://oiuy88.github.io/CAN-Europe-rss/feed.xml"
 OUTPUT_FILE = Path("feed.xml")
 MAX_ITEMS = 50
 
